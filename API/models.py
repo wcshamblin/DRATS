@@ -4,7 +4,6 @@ from time import time
 
 # Create your models here.
 class WTB(models.Model):
-    owner = models.ForeignKey('auth.User', related_name='WTBs', on_delete=models.CASCADE)
     idstr = ''.join([str(randint(0,9)) for i in range(0,21)])
     status = "None"
     ctime = time()
