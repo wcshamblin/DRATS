@@ -10,6 +10,8 @@ class WTBSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    user_wtbs = serializers.PrimaryKeyRelatedField(many=True, queryset=WTB.objects.all())
+
     class Meta:
         model = User
         fields = ('username', 'password')
