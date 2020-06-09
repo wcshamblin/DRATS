@@ -13,6 +13,6 @@ urlpatterns = [
         name='get_delete_update_WTB'
     ),
     path('api/v1/WTBs/', # urls list all and create new one
-        views.get_post_WTBs.as_view(),
-        name='get_post_WTBs'),
+        views.post_WTB.as_view(),
+        name='post_WTB'),
 ]

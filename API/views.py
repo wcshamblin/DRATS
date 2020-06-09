@@ -62,7 +62,7 @@ class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
     # Delete WTB
     def delete(self, request, pk):
         req = self.get_queryset(pk)
-        if(request.user == req.creator): # If creator is who makes request
+        if(request.user == req.owner): # If creator is who makes request
             req.delete()
             content = {
                 'status': 'NO CONTENT'
@@ -74,17 +74,11 @@ class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
             }
             return Response(content, status=status.HTTP_401_UNAUTHORIZED)
    
-class get_post_WTBs(ListCreateAPIView):
+class post_WTB(ListCreateAPIView):
     serializer_class = WTBSerializer    
-    def get_queryset(self):
-       WTBs = WTB.objects.all()
-       return WTBs
-
-    # Get all WTBs
+    # NO GET HERE - ONLY POST
     def get(self, request):
-        WTBs = self.get_queryset()
-        serializer = WTBSerializer(WTBs)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
     # Create a new WTB
     def post(self, request):
         print(request.data)
