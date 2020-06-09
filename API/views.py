@@ -2,6 +2,10 @@ from django.shortcuts import render
 from rest_framework import permissions
 from django.contrib.auth.models import User
 # Create your views here.
+from rest_framework import status
+from rest_framework.response import Response
+from .permissions import IsOwnerOrReadOnly
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework import viewsets
 from rest_framework import generics
 from API.serializers import UserSerializer
@@ -20,9 +24,9 @@ class UserCreate(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-class get_delete_update_movie(RetrieveUpdateDestroyAPIView):
-    serializer_class = MovieSerializer
-    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly,)
+class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
+    serializer_class = WTBSerializer
+    permission_classes = (IsOwnerOrReadOnly,)
 
     def get_queryset(self, pk):
         try:
@@ -79,14 +83,13 @@ class get_post_WTBs(ListCreateAPIView):
     # Get all WTBs
     def get(self, request):
         WTBs = self.get_queryset()
-        paginate_queryset = self.paginate_queryset(WTBs)
-        serializer = self.serializer_class(paginate_queryset, many=True)
-        return self.get_paginated_response(serializer.data)
-
+        serializer = WTBSerializer(WTBs)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     # Create a new WTB
     def post(self, request):
+        print(request.data)
         serializer = WTBSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(creator=request.user)
+            serializer.save(owner=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

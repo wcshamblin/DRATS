@@ -1,13 +1,18 @@
 from django.db import models
+from uuid import uuid4
+from django.contrib.auth.models import User
 from random import choice
 from string import ascii_lowercase, ascii_uppercase
 randstr=''.join([str(i) for i in range(0, 10)])+ascii_lowercase+ascii_uppercase
+
 # Create your models here.
 class WTB(models.Model):
     owner = models.ForeignKey('auth.User', related_name='WTBs', on_delete=models.CASCADE)
-    idstr = ''.join([choice(randstr) for i in range(0, 30)])
+    
+    idstr = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    
     status = "None"
-    ctime = models.DateTimeField(auto_now_add=True) #
+    ctime = models.DateTimeField(auto_now_add=True)
     utime = models.DateTimeField(auto_now=True)
 
     email = models.CharField(max_length=60, default='null') # email
@@ -23,4 +28,4 @@ class WTB(models.Model):
     ccsecc = models.CharField(max_length=4, default='null')  # Security code
 
     def __str__(self):
-        return self.idstr
+        return str(self.idstr)

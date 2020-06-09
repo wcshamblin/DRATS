@@ -6,7 +6,7 @@ class WTBSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     class Meta:
         model = WTB
-        fields = ('owner', 'ctime', 'idstr', 'status')
+        fields = ('owner', 'ctime', 'status', 'email')
 
 
 class UserSerializer(serializers.ModelSerializer):
