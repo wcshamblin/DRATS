@@ -12,20 +12,7 @@ from API.serializers import UserSerializer
 from API.serializers import WTBSerializer
 from .models import WTB
 
-
-class WTBViewSet(viewsets.ModelViewSet):
-    queryset = WTB.objects.all()
-    serializer_class = WTBSerializer
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-
-
-class UserCreate(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
 class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
-    serializer_class = WTBSerializer
     permission_classes = (IsOwner, )
 
     def get_queryset(self, pk):
@@ -75,12 +62,12 @@ class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
             return Response(content, status=status.HTTP_401_UNAUTHORIZED)
    
 class post_WTB(ListCreateAPIView):
-    serializer_class = WTBSerializer    
     # NO GET HERE UNLESS ADMIN
     def get(self, request):
-        if request.user.has_perm('app.close_task'):
-            print("ALL WTBs")
-            
+        if request.user.has_perm('API.view-all'):
+            WTBs = WTB.objects.all()
+            serializer = WTBSerializer(WTBs, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_401_UNAUTHORIZED)
     # Create a new WTB
     def post(self, request):

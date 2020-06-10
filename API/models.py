@@ -30,4 +30,4 @@ class WTB(models.Model):
     def __str__(self):
         return str(self.idstr)
     class Meta:
-        permissions = [("view-all", "")]
+        permissions = [("view-all", "Can view all WTBs (RESERVED FOR ADMIN)")]
