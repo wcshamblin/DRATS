@@ -29,3 +29,5 @@ class WTB(models.Model):
 
     def __str__(self):
         return str(self.idstr)
+    class Meta:
+        permissions = [("view-all", "")]

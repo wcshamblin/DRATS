@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 # Create your views here.
 from rest_framework import status
 from rest_framework.response import Response
-from .permissions import IsOwnerOrReadOnly
+from .permissions import IsOwner
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework import viewsets
 from rest_framework import generics
@@ -26,7 +26,7 @@ class UserCreate(generics.CreateAPIView):
 
 class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
     serializer_class = WTBSerializer
-    permission_classes = (IsOwnerOrReadOnly,)
+    permission_classes = (IsOwner, )
 
     def get_queryset(self, pk):
         try:
@@ -76,14 +76,16 @@ class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
    
 class post_WTB(ListCreateAPIView):
     serializer_class = WTBSerializer    
-    # NO GET HERE - ONLY POST
+    # NO GET HERE UNLESS ADMIN
     def get(self, request):
+        if request.user.has_perm('app.close_task'):
+            print("ALL WTBs")
+            
         return Response(status=status.HTTP_401_UNAUTHORIZED)
     # Create a new WTB
     def post(self, request):
-        print(request.data)
         serializer = WTBSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data["idstr"], status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
