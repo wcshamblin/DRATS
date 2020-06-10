@@ -68,7 +68,10 @@ class post_WTB(ListCreateAPIView):
             WTBs = WTB.objects.all()
             serializer = WTBSerializer(WTBs, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
+        content = {
+            'status': 'UNAUTHORIZED'
+        }
+        return Response(content, status=status.HTTP_401_UNAUTHORIZED)
     # Create a new WTB
     def post(self, request):
         serializer = WTBSerializer(data=request.data)
