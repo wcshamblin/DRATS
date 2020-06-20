@@ -34,7 +34,7 @@ class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
     # Update WTB
     def put(self, request, pk):
         req = self.get_queryset(pk)
-        if(request.user == req.creator): # If creator is who makes request
+        if(request.user == req.creator): # If creator is the one who requested
             serializer = WTBSerializer(req, data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -49,7 +49,7 @@ class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
     # Delete WTB
     def delete(self, request, pk):
         req = self.get_queryset(pk)
-        if(request.user == req.owner): # If creator is who makes request
+        if(request.user == req.owner): # If creator is the one who requested
             req.delete()
             content = {
                 'status': 'NO CONTENT'
