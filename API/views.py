@@ -4,17 +4,15 @@ from django.contrib.auth.models import User
 # Create your views here.
 from rest_framework import status
 from rest_framework.response import Response
-from .permissions import IsOwner
 from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework import viewsets
 from rest_framework import generics
 from API.serializers import UserSerializer
 from API.serializers import WTBSerializer
 from .models import WTB
+from django.shortcuts import get_object_or_404
 
 class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsOwner, )
-
     def get_queryset(self, pk):
         try:
             req = WTB.objects.get(pk=pk)
@@ -28,13 +26,20 @@ class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
     # Get WTB
     def get(self, request, pk):
         req = self.get_queryset(pk)
-        serializer = WTBSerializer(req)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        if(request.user == req.owner): # If owner is the one who requested
+            serializer = WTBSerializer(req)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            content = {
+                'status': 'UNAUTHORIZED'
+            }
+            return Response(content, status=status.HTTP_401_UNAUTHORIZED)
+
 
     # Update WTB
     def put(self, request, pk):
         req = self.get_queryset(pk)
-        if(request.user == req.creator): # If creator is the one who requested
+        if(request.user == req.owner): # If owner is the one who requested
             serializer = WTBSerializer(req, data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -49,7 +54,7 @@ class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
     # Delete WTB
     def delete(self, request, pk):
         req = self.get_queryset(pk)
-        if(request.user == req.owner): # If creator is the one who requested
+        if(request.user == req.owner): # If owner is the one who requested
             req.delete()
             content = {
                 'status': 'NO CONTENT'
