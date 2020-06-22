@@ -10,22 +10,22 @@ from rest_framework import generics
 from API.serializers import UserSerializer
 from API.serializers import WTBSerializer
 from .models import WTB
-from django.shortcuts import get_object_or_404
+from django.http import Http404
 
 class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
     def get_queryset(self, pk):
         try:
             req = WTB.objects.get(pk=pk)
         except WTB.DoesNotExist:
-            content = {
-                'status': 'Not Found'
-            }
-            return Response(content, status=status.HTTP_404_NOT_FOUND)
+            raise Http404("No WTB matches this ID")
         return req
 
     # Get WTB
     def get(self, request, pk):
-        req = self.get_queryset(pk)
+        try:
+            req = self.get_queryset(pk)
+        except Http404 as error:
+            return Response("No WTB matches this ID", status=status.HTTP_404_NOT_FOUND)
         if(request.user == req.owner): # If owner is the one who requested
             serializer = WTBSerializer(req)
             return Response(serializer.data, status=status.HTTP_200_OK)
