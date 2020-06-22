@@ -1,13 +1,6 @@
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied
 
-
-class IsOwner(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        # Read permissions are only allowed to the creator
-        return obj.creator == request.user
-
-
 class IsAuthenticated(permissions.BasePermission):
     # Allows access only to authenticated users.
     def has_permission(self, request, view):
