@@ -1,9 +1,6 @@
 from django.db import models
 from uuid import uuid4
 from django.contrib.auth.models import User
-from random import choice
-from string import ascii_lowercase, ascii_uppercase
-randstr=''.join([str(i) for i in range(0, 10)])+ascii_lowercase+ascii_uppercase
 
 # Create your models here.
 class WTB(models.Model):
