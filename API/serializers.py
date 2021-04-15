@@ -1,15 +1,15 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import WTB
+from .models import ticket
 
-class WTBSerializer(serializers.HyperlinkedModelSerializer):
+class ticketSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
     class Meta:
-        model = WTB
-        fields = ('idstr', 'owner', 'ctime', 'email', 'fname', 'lname', 'addr', 'city', 'zcode', 'ccnum', 'ccname', 'ccexpr', 'ccsecc', 'status')
+        model = ticket
+        fields = ('idstr', 'owner', 'ctime', 'email', 'fname', 'lname', 'ticket', 'status')
 
 class UserSerializer(serializers.ModelSerializer):
-    user_wtbs = serializers.PrimaryKeyRelatedField(many=True, queryset=WTB.objects.all())
+    user_tickets = serializers.PrimaryKeyRelatedField(many=True, queryset=ticket.objects.all())
 
     class Meta:
         model = User

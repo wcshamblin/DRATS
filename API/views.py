@@ -8,26 +8,26 @@ from rest_framework.generics import RetrieveUpdateDestroyAPIView, ListCreateAPIV
 from rest_framework import viewsets
 from rest_framework import generics
 from API.serializers import UserSerializer
-from API.serializers import WTBSerializer
-from .models import WTB
+from API.serializers import ticketSerializer
+from .models import ticket
 from django.http import Http404
 
-class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
+class get_delete_update_ticket(RetrieveUpdateDestroyAPIView):
     def get_queryset(self, pk):
         try:
-            req = WTB.objects.get(pk=pk)
-        except WTB.DoesNotExist:
-            raise Http404("No WTB matches this ID")
+            req = ticket.objects.get(pk=pk)
+        except ticket.DoesNotExist:
+            raise Http404("No ticket matches this ID")
         return req
 
-    # Get WTB
+    # Get ticket
     def get(self, request, pk):
         try:
             req = self.get_queryset(pk)
         except Http404 as error:
-            return Response("No WTB matches this ID", status=status.HTTP_404_NOT_FOUND)
+            return Response("No ticket matches this ID", status=status.HTTP_404_NOT_FOUND)
         if(request.user == req.owner): # If owner is the one who requested
-            serializer = WTBSerializer(req)
+            serializer = ticketSerializer(req)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             content = {
@@ -36,11 +36,11 @@ class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
             return Response(content, status=status.HTTP_401_UNAUTHORIZED)
 
 
-    # Update WTB
+    # Update ticket
     def put(self, request, pk):
         req = self.get_queryset(pk)
         if(request.user == req.owner): # If owner is the one who requested
-            serializer = WTBSerializer(req, data=request.data)
+            serializer = ticketSerializer(req, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -51,7 +51,7 @@ class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
             }
             return Response(content, status=status.HTTP_401_UNAUTHORIZED)
 
-    # Delete WTB
+    # Delete ticket
     def delete(self, request, pk):
         req = self.get_queryset(pk)
         if(request.user == req.owner): # If owner is the one who requested
@@ -66,20 +66,21 @@ class get_delete_update_WTB(RetrieveUpdateDestroyAPIView):
             }
             return Response(content, status=status.HTTP_401_UNAUTHORIZED)
    
-class post_WTB(ListCreateAPIView):
+class post_ticket(ListCreateAPIView):
     # NO GET HERE UNLESS ADMIN
     def get(self, request):
         if request.user.has_perm('API.view-all'):
-            WTBs = WTB.objects.all()
-            serializer = WTBSerializer(WTBs, many=True)
+            tickets = ticket.objects.all()
+            serializer = ticketSerializer(tickets, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         content = {
             'status': 'UNAUTHORIZED'
         }
         return Response(content, status=status.HTTP_401_UNAUTHORIZED)
-    # Create a new WTB
+    
+    # Create a new ticket
     def post(self, request):
-        serializer = WTBSerializer(data=request.data)
+        serializer = ticketSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(owner=request.user)
             return Response(serializer.data["idstr"], status=status.HTTP_201_CREATED)
